@@ -115,7 +115,6 @@ class Realm {
   Future<Map> update(String className,
       {@required dynamic primaryKey, @required Map<String, dynamic> value}) {
     assert(value['uuid'] == null);
-
     return _invokeMethod('updateObject', {
       '\$': className,
       'primaryKey': primaryKey,
