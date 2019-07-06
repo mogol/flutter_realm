@@ -1,4 +1,3 @@
 # Example
 
-* Run integration tests with `flutter drive`.
-* Remove `enableFlutterDriverExtension` if keyboard doesn't work in `main.dart` 
+* Run integration tests with `flutter drive --target=test_driver/app.dart`.

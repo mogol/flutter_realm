@@ -12,19 +12,47 @@ void main() {
     FlutterDriver driver;
 
     final addFinder = find.byValueKey('add');
+    final fetchTestFinder = find.byValueKey('Fetch');
+
     final okFinder = find.byValueKey('ok');
     final titleFieldFinder = find.byValueKey('titleField');
 
     setUpAll(() async {
       driver = await FlutterDriver.connect();
-      driver.requestData('Realm.deleteAllObjectsFromAllRealms');
+    });
+
+    setUp(() async {
+      await driver.requestData('reset');
+    });
+
+    tearDown(() async {
+      await driver.tap(find.byTooltip('Back'));
     });
 
     tearDownAll(() async {
       if (driver != null) driver.close();
     });
 
-    test('create products', () async {
+    test('fetch', () async {
+      await driver.tap(fetchTestFinder);
+
+      final products = ['iPhone', 'iPad', 'iMac', 'Stand 999\$'];
+
+      for (var product in products) {
+        await driver.tap(addFinder);
+        await driver.tap(titleFieldFinder);
+        await driver.enterText(product);
+        await driver.tap(okFinder);
+      }
+
+      for (var product in products) {
+        await driver.waitFor(find.text(product));
+      }
+    });
+
+    test('fetch2', () async {
+      await driver.tap(fetchTestFinder);
+
       final products = ['iPhone', 'iPad', 'iMac', 'Stand 999\$'];
 
       for (var product in products) {
