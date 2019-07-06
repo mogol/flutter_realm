@@ -16,7 +16,19 @@ void main() {
     final subscribeTestFinder = find.byValueKey('Subscribe');
 
     final okFinder = find.byValueKey('ok');
+    final deleteButton = find.byValueKey('Delete');
+    final editButton = find.byValueKey('Edit');
+
     final titleFieldFinder = find.byValueKey('titleField');
+
+    final rowTitleFinder = (int i) => find.byValueKey('row_${i}_title');
+    final rowMenuFinder = (int i) => find.byValueKey('row_${i}_menu');
+
+    final hasProducts = (List<String> products) async {
+      for (var i = 0; i < products.length; i++) {
+        await expectLater(await driver.getText(rowTitleFinder(i)), products[i]);
+      }
+    };
 
     setUpAll(() async {
       driver = await FlutterDriver.connect();
@@ -39,7 +51,7 @@ void main() {
     test('fetch', () async {
       await driver.tap(fetchTestFinder);
 
-      final products = ['iPhone', 'iPad', 'iMac', 'Stand 999\$'];
+      final products = ['1 iPhone', '2 iPad', '3 iMac', '4 Stand 999\$'];
 
       for (var product in products) {
         await driver.tap(addFinder);
@@ -48,15 +60,19 @@ void main() {
         await driver.tap(okFinder);
       }
 
-      for (var product in products) {
-        await driver.waitFor(find.text(product));
-      }
+      await hasProducts(products);
     });
 
     test('subscribe', () async {
       await driver.tap(subscribeTestFinder);
 
-      final products = ['iPhone', 'iPad', 'iMac', 'Stand 999\$'];
+      final products = ['1 iPad', '2 iPhone', '3 iMac', '4 Stand 999\$'];
+      final updatedProducts = [
+        '1 iPad Pro',
+        '2 iPhone X',
+        '3 Mac Pro',
+        '4 Stand 007\$'
+      ];
 
       for (var product in products) {
         await driver.tap(addFinder);
@@ -65,8 +81,26 @@ void main() {
         await driver.tap(okFinder);
       }
 
-      for (var product in products) {
-        await driver.waitFor(find.text(product));
+      await hasProducts(products);
+
+      for (var i = 0; i < products.length; i++) {
+        await driver.tap(rowMenuFinder(i));
+        await driver.tap(editButton);
+        await driver.tap(titleFieldFinder);
+        await driver.enterText(updatedProducts[i]);
+        await driver.tap(okFinder);
+      }
+
+      await hasProducts(updatedProducts);
+
+      while (updatedProducts.isNotEmpty) {
+        final product = updatedProducts.last;
+        updatedProducts.removeLast();
+
+        await driver.tap(rowMenuFinder(updatedProducts.length));
+        await driver.tap(deleteButton);
+
+        await driver.waitForAbsent(find.text(product));
       }
     });
   });

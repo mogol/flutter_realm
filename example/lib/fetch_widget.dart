@@ -30,7 +30,7 @@ class _FetchWidgetState extends State<FetchWidget> {
   }
 
   Future _onAdd(Product product) async {
-    await widget.realm.createObject('Product', product.toMap());
+    await widget.realm.createObject('Product', product.toMap(withId: true));
     _fetch();
   }
 
@@ -39,6 +39,7 @@ class _FetchWidgetState extends State<FetchWidget> {
 
     setState(() {
       _products = all.cast<Map>().map(Product.fromMap).toList();
+      _products.sort((p1, p2) => p1.title.compareTo(p2.title));
     });
   }
 }
