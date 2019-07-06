@@ -13,6 +13,7 @@ void main() {
 
     final addFinder = find.byValueKey('add');
     final fetchTestFinder = find.byValueKey('Fetch');
+    final subscribeTestFinder = find.byValueKey('Subscribe');
 
     final okFinder = find.byValueKey('ok');
     final titleFieldFinder = find.byValueKey('titleField');
@@ -30,6 +31,8 @@ void main() {
     });
 
     tearDownAll(() async {
+      await driver.requestData('reset');
+
       if (driver != null) driver.close();
     });
 
@@ -50,8 +53,8 @@ void main() {
       }
     });
 
-    test('fetch2', () async {
-      await driver.tap(fetchTestFinder);
+    test('subscribe', () async {
+      await driver.tap(subscribeTestFinder);
 
       final products = ['iPhone', 'iPad', 'iMac', 'Stand 999\$'];
 

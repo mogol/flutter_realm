@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_realm/flutter_realm.dart';
 import 'fetch_widget.dart';
+import 'subscription_widget.dart';
 
 void main() {
   runApp(MyApp());
@@ -38,6 +39,10 @@ class _MyAppState extends State<MyApp> {
               return MaterialPageRoute(
                   builder: (_) => FetchWidget(realm: _realm));
               break;
+            case '/subscribe':
+              return MaterialPageRoute(
+                  builder: (_) => SubscriptionWidget(realm: _realm));
+              break;
             default:
               print('path {$path} not found');
               return null;
@@ -61,6 +66,12 @@ class Home extends StatelessWidget {
             title: Text('Fetch'),
             trailing: Icon(Icons.navigate_next),
             onTap: () => Navigator.of(context).pushNamed('/fetch'),
+          ),
+          ListTile(
+            key: Key('Subscribe'),
+            title: Text('Subscribe'),
+            trailing: Icon(Icons.navigate_next),
+            onTap: () => Navigator.of(context).pushNamed('/subscribe'),
           ),
         ],
       ),
