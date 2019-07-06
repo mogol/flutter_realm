@@ -46,7 +46,6 @@ class SubscriptionWidget extends StatelessWidget {
       realm.subscribeAllObjects('Product').map<List<Product>>((all) {
         final products = all.cast<Map>().map(Product.fromMap).toList();
         products.sort((p1, p2) => p1.title.compareTo(p2.title));
-        print(products);
         return products;
       });
 }
