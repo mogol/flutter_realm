@@ -62,7 +62,9 @@ class Realm {
       return _subscriptions[subscriptionId].stream;
     }
 
-    final controller = BehaviorSubject<List<Map>>();
+    final controller = BehaviorSubject<List<Map>>(onCancel: (){
+      _unsubscribe(subscriptionId);
+    });
 
     _subscriptions[subscriptionId] = controller;
     _invokeMethod('subscribeAllObjects', {
@@ -83,7 +85,6 @@ class Realm {
     // ignore: close_sinks
     final controller = BehaviorSubject<List<Map>>(onCancel: () {
       _unsubscribe(subscriptionId);
-      _subscriptions.remove(subscriptionId);
     });
 
     _subscriptions[subscriptionId] = controller;
