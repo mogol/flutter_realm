@@ -289,6 +289,7 @@ static NSString *const CHANNEL_NAME = @"plugins.it_nomads.com/flutter_realm";
                                      @"lessThanOrEqualTo":@"<=",
                                      @"equalTo":@"==",
                                      @"notEqualTo":@"!=",
+                                     @"contains":@"CONTAINS"
                                      };
     NSMutableArray *arguments = [NSMutableArray array];
     

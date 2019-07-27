@@ -154,6 +154,9 @@ class RealmQuery {
   RealmQuery equalTo(String field, dynamic value) =>
       _pushThree('equalTo', field, value);
 
+  RealmQuery contains(String field, String value) =>
+      _pushThree('contains', field, value);
+
   RealmQuery notEqualTo(String field, dynamic value) =>
       _pushThree('notEqualTo', field, value);
 
