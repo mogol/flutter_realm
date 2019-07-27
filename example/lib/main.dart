@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_realm/flutter_realm.dart';
+import 'package:flutter_realm_example/schema.dart';
 import 'fetch_widget.dart';
 import 'subscription_widget.dart';
 
@@ -25,8 +26,14 @@ class _MyAppState extends State<MyApp> {
   Future _initRealm() async {
     final inMemory = RealmConfiguration(inMemoryIdentifier: 'mainrealm');
     _realm = Realm();
+
     await _realm.initialize(inMemory);
     await _realm.deleteAllObjects();
+
+    for (var i = 0; i < 10; i++) {
+      await _realm.createObject(
+          'Product', Product('$i', 'Product $i').toMap(withId: true));
+    }
   }
 
   @override
