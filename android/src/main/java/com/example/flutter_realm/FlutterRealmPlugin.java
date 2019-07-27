@@ -291,6 +291,16 @@ public class FlutterRealmPlugin implements MethodCallHandler {
                     }
                 }
                 break;
+                case "contains": {
+                    String fieldName = (String) item.get(1);
+                    Object argument = item.get(2);
+                    if (argument instanceof String) {
+                        result = result.contains(fieldName, (String) argument);
+                    } else {
+                        throw new Exception("Unsupported type");
+                    }
+                }
+                break;
                 case "and":
                     result = result.and();
                     break;
