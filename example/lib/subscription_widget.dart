@@ -6,15 +6,33 @@ import 'package:flutter_realm/flutter_realm.dart';
 import 'helpers/products_widget.dart';
 import 'schema.dart';
 
-class SubscriptionWidget extends StatelessWidget {
+class SubscriptionWidget extends StatefulWidget {
   final Realm realm;
 
   const SubscriptionWidget({Key key, this.realm}) : super(key: key);
 
   @override
+  _SubscriptionWidgetState createState() => _SubscriptionWidgetState();
+}
+
+class _SubscriptionWidgetState extends State<SubscriptionWidget> {
+  Stream<List<Product>> allProducts;
+  Stream<List<Product>> search;
+  Realm realm;
+
+  @override
+  void initState() {
+    super.initState();
+    realm = widget.realm;
+
+    allProducts =
+        realm.subscribeAllObjects('Product').map<List<Product>>(_mapProduct);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Product>>(
-        stream: _stream,
+        stream: search ?? allProducts,
         initialData: [],
         builder: (context, snapshot) {
           return ProductsWidget(
@@ -22,6 +40,7 @@ class SubscriptionWidget extends StatelessWidget {
             onEdit: _onEdit,
             onDelete: _onDelete,
             products: snapshot.data,
+            onSearch: _onSearch,
           );
         });
   }
@@ -42,10 +61,22 @@ class SubscriptionWidget extends StatelessWidget {
     await realm.delete('Product', primaryKey: product.uuid);
   }
 
-  Stream<List<Product>> get _stream =>
-      realm.subscribeAllObjects('Product').map<List<Product>>((all) {
-        final products = all.cast<Map>().map(Product.fromMap).toList();
-        products.sort((p1, p2) => p1.title.compareTo(p2.title));
-        return products;
-      });
+  void _onSearch(String term) {
+    Stream<List<Product>> newSearch;
+
+    if (term == null || term.isEmpty) {
+      newSearch = null;
+    } else {
+      final query = RealmQuery('Product').contains('title', term);
+      newSearch = realm.subscribeObjects(query).map<List<Product>>(_mapProduct);
+    }
+
+    setState(() => search = newSearch);
+  }
+
+  List<Product> _mapProduct(List all) {
+    final products = all.cast<Map>().map(Product.fromMap).toList();
+    products.sort((p1, p2) => p1.title.compareTo(p2.title));
+    return products;
+  }
 }

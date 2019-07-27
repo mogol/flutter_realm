@@ -8,6 +8,7 @@ void main() {
       await Realm.deleteAllObjectsFromAllRealms();
       return 'ok';
     }
+    return '"$message" is not implemented';
   });
 
   app.main();

@@ -18,6 +18,7 @@ void main() {
     final okFinder = find.byValueKey('ok');
     final deleteButton = find.byValueKey('Delete');
     final editButton = find.byValueKey('Edit');
+    final searchButton = find.byValueKey('search');
 
     final titleFieldFinder = find.byValueKey('titleField');
 
@@ -27,6 +28,14 @@ void main() {
     final hasProducts = (List<String> products) async {
       for (var i = 0; i < products.length; i++) {
         await expectLater(await driver.getText(rowTitleFinder(i)), products[i]);
+      }
+    };
+    final createProducts = (List<String> products) async {
+      for (var product in products) {
+        await driver.tap(addFinder);
+        await driver.tap(titleFieldFinder);
+        await driver.enterText(product);
+        await driver.tap(okFinder);
       }
     };
 
@@ -53,12 +62,7 @@ void main() {
 
       final products = ['1 iPhone', '2 iPad', '3 iMac', '4 Stand 999\$'];
 
-      for (var product in products) {
-        await driver.tap(addFinder);
-        await driver.tap(titleFieldFinder);
-        await driver.enterText(product);
-        await driver.tap(okFinder);
-      }
+      await createProducts(products);
 
       await hasProducts(products);
     });
@@ -74,13 +78,7 @@ void main() {
         '4 Stand 007\$'
       ];
 
-      for (var product in products) {
-        await driver.tap(addFinder);
-        await driver.tap(titleFieldFinder);
-        await driver.enterText(product);
-        await driver.tap(okFinder);
-      }
-
+      await createProducts(products);
       await hasProducts(products);
 
       for (var i = 0; i < products.length; i++) {
@@ -102,6 +100,34 @@ void main() {
 
         await driver.waitForAbsent(find.text(product));
       }
+    });
+
+    test('subscribe with search', () async {
+      await driver.tap(subscribeTestFinder);
+      final searchTerm = 'iPhone';
+
+      final products = [
+        '1 iPad',
+        '2 iPhone 7',
+        '3 iMac',
+        '4 Stand 999\$',
+        '5 iPhone 8'
+      ];
+      await createProducts(products);
+
+      await driver.tap(searchButton);
+      await driver.tap(titleFieldFinder);
+      await driver.enterText(searchTerm);
+      await driver.tap(okFinder);
+
+      final expected = ['2 iPhone 7', '5 iPhone 8'];
+      await hasProducts(expected);
+
+      final newProducts = ['6 iMax Pro', '7 Mac Mini'];
+      final newPhones = ['8 iPhone X', '9 iPhone XS'];
+      await createProducts(newProducts + newPhones);
+
+      await hasProducts(expected + newPhones);
     });
   });
 }

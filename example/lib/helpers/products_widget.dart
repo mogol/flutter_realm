@@ -8,16 +8,29 @@ class ProductsWidget extends StatelessWidget {
   final Function(Product) onAdd;
   final Function(Product) onDelete;
   final Function(Product) onEdit;
+  final Function(String) onSearch;
 
-  const ProductsWidget(
-      {Key key, this.products, this.onAdd, this.onDelete, this.onEdit})
-      : super(key: key);
+  const ProductsWidget({
+    Key key,
+    @required this.products,
+    @required this.onAdd,
+    @required this.onDelete,
+    @required this.onEdit,
+    @required this.onSearch,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Plugin example app'),
+        actions: <Widget>[
+          IconButton(
+            key: Key('search'),
+            icon: Icon(Icons.search),
+            onPressed: () => _onSearch(context),
+          )
+        ],
       ),
       body: ListView.builder(
         itemCount: products.length,
@@ -33,17 +46,17 @@ class ProductsWidget extends StatelessWidget {
             trailing: PopupMenuButton<_Actions>(
               key: Key('row_${i}_menu'),
               itemBuilder: (_) => [
-                    PopupMenuItem(
-                      key: Key('Delete'),
-                      child: Text('Delete'),
-                      value: _Actions.remove,
-                    ),
-                    PopupMenuItem(
-                      key: Key('Edit'),
-                      child: Text('Edit'),
-                      value: _Actions.edit,
-                    ),
-                  ],
+                PopupMenuItem(
+                  key: Key('Delete'),
+                  child: Text('Delete'),
+                  value: _Actions.remove,
+                ),
+                PopupMenuItem(
+                  key: Key('Edit'),
+                  child: Text('Edit'),
+                  value: _Actions.edit,
+                ),
+              ],
               onSelected: (action) {
                 switch (action) {
                   case _Actions.remove:
@@ -80,6 +93,11 @@ class ProductsWidget extends StatelessWidget {
     onEdit(updated);
   }
 
+  void _onSearch(BuildContext context) async {
+    final title = await _requestTitle(context);
+    onSearch(title);
+  }
+
   Function _onAdd(BuildContext context) {
     return () async {
       final title = await _requestTitle(context);
@@ -99,32 +117,31 @@ class ProductsWidget extends StatelessWidget {
     return await showDialog<String>(
       context: context,
       builder: (context) => SimpleDialog(
-            title: Text('Enter title'),
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: TextField(
-                  key: Key('titleField'),
-                  autofocus: true,
-                  controller: _controller,
-                ),
-              ),
-              ButtonBar(
-                children: <Widget>[
-                  FlatButton(
-                    child: Text('Cancel'),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                  FlatButton(
-                    key: Key('ok'),
-                    child: Text('Ok'),
-                    onPressed: () =>
-                        Navigator.of(context).pop(_controller.text),
-                  ),
-                ],
-              )
-            ],
+        title: Text('Enter title'),
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: TextField(
+              key: Key('titleField'),
+              autofocus: true,
+              controller: _controller,
+            ),
           ),
+          ButtonBar(
+            children: <Widget>[
+              FlatButton(
+                child: Text('Cancel'),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              FlatButton(
+                key: Key('ok'),
+                child: Text('Ok'),
+                onPressed: () => Navigator.of(context).pop(_controller.text),
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 }
