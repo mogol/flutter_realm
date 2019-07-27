@@ -1,3 +1,10 @@
+## 0.1.0
+
+* *Breaking changes:* update dependencies to uuid 2.0.1
+* Add subscriptions.
+* Add `contain` operator in queries.
+
+
 ## 0.0.1
 
-* TODO: Describe initial release.
+* Initial release.
