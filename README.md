@@ -14,7 +14,7 @@ See the `example` directory for a complete sample app using Realm Database.
 
 ## Setup
 * Add flutter_realm as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
-* Add Realm 5.12.0 to your [Android host app](https://realm.io/docs/java/latest#getting-started)
+* Add Realm 5.13.0 to your [Android host app](https://realm.io/docs/java/latest#getting-started)
 * Add models files in  in native [Java](https://github.com/mogol/flutter_realm/blob/master/example/android/app/src/main/java/com/example/flutter_realm_example/Product.java) and [ObjC](https://github.com/mogol/flutter_realm/blob/master/example/ios/Runner/RealmSchema.h) host apps.  
 
 ## Features 
@@ -25,7 +25,8 @@ See the `example` directory for a complete sample app using Realm Database.
 - [x] Create object 
 - [x] Delete object 
 - [x] Update object 
-- [x] Query with `>`, `>=`, `<`, `<=`, `=` and `!=` operators on fields
+- [x] Query with `>`, `>=`, `<`, `<=`, `=`, `!=` and `contains` operators on fields
+- [x] Subscribe on queries and allObjects
 - [x] Fields with array of String and int
 
 
