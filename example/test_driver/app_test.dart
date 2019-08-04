@@ -48,7 +48,7 @@ void main() {
     });
 
     tearDown(() async {
-      await driver.requestData('reset');
+      await driver.tap(find.pageBack());
     });
 
     tearDownAll(() async {
@@ -128,6 +128,7 @@ void main() {
 
       final newProducts = ['6 iMax Pro', '7 Mac Mini'];
       final newPhones = ['8 iPhone X', '9 iPhone XS'];
+
       await createProducts(newProducts + newPhones);
 
       await hasProducts(expected + newPhones);

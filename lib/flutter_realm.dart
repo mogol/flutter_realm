@@ -29,7 +29,7 @@ class Realm {
         final subscriptionId = call.arguments['subscriptionId'];
         if (subscriptionId == null ||
             !_subscriptions.containsKey(subscriptionId)) {
-          throw ('Unknown subscriptionId: $call');
+          throw ('Unknown subscriptionId: [$subscriptionId]. Call: $call');
         }
         // ignore: close_sinks
         final controller = _subscriptions[subscriptionId];
@@ -63,10 +63,8 @@ class Realm {
       _invokeMethod('allObjects', {'\$': className});
 
   Stream<List<Map>> subscribeAllObjects(String className) {
-    final subscriptionId = className;
-    if (_subscriptions.containsKey(subscriptionId)) {
-      return _subscriptions[subscriptionId].stream;
-    }
+    final subscriptionId =
+        'subscribeAllObjects:' + className + ':' + _uuid.v4();
 
     final controller = BehaviorSubject<List<Map>>(onCancel: () {
       _unsubscribe(subscriptionId);
@@ -82,11 +80,8 @@ class Realm {
   }
 
   Stream<List> subscribeObjects(RealmQuery query) {
-    final subscriptionId = _uuid.v4();
-
-    if (_subscriptions.containsKey(subscriptionId)) {
-      return _subscriptions[subscriptionId].stream;
-    }
+    final subscriptionId =
+        'subscribeObjects:' + query.className + ':' + _uuid.v4();
 
     // ignore: close_sinks
     final controller = BehaviorSubject<List<Map>>(onCancel: () {
@@ -110,13 +105,13 @@ class Realm {
       _invokeMethod(
           'createObject', <String, dynamic>{'\$': className}..addAll(object));
 
-  void _unsubscribe(String subscriptionId) {
+  Future _unsubscribe(String subscriptionId) async {
     if (!_subscriptions.containsKey(subscriptionId)) {
       return;
     }
+    await _invokeMethod('unsubscribe', {'subscriptionId': subscriptionId});
     _subscriptions[subscriptionId].close();
     _subscriptions.remove(subscriptionId);
-    _invokeMethod('unsubscribe', {'subscriptionId': subscriptionId});
   }
 
   Future<Map> update(String className,

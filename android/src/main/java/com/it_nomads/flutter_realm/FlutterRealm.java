@@ -144,7 +144,11 @@ class FlutterRealm {
                     if (!subscriptions.containsKey(subscriptionId)) {
                         throw new Exception("Not subscribed: " + subscriptionId);
                     }
-                    subscriptions.remove(subscriptionId);
+                    RealmResults subscription = subscriptions.remove(subscriptionId);
+                    if (subscription != null) {
+                        subscription.removeAllChangeListeners();
+                    }
+
                     result.success(null);
                     break;
                 }

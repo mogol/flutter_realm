@@ -16,8 +16,7 @@ class SubscriptionWidget extends StatefulWidget {
 }
 
 class _SubscriptionWidgetState extends State<SubscriptionWidget> {
-  Stream<List<Product>> allProducts;
-  Stream<List<Product>> search;
+  Stream<List<Product>> products;
   Realm realm;
 
   @override
@@ -25,14 +24,14 @@ class _SubscriptionWidgetState extends State<SubscriptionWidget> {
     super.initState();
     realm = widget.realm;
 
-    allProducts =
+    products =
         realm.subscribeAllObjects('Product').map<List<Product>>(_mapProduct);
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Product>>(
-        stream: search ?? allProducts,
+        stream: products,
         initialData: [],
         builder: (context, snapshot) {
           return ProductsWidget(
@@ -62,16 +61,16 @@ class _SubscriptionWidgetState extends State<SubscriptionWidget> {
   }
 
   void _onSearch(String term) {
-    Stream<List<Product>> newSearch;
+    Stream<List<Map>> newProducts;
 
     if (term == null || term.isEmpty) {
-      newSearch = null;
+      newProducts = realm.subscribeAllObjects('Product');
     } else {
       final query = RealmQuery('Product').contains('title', term);
-      newSearch = realm.subscribeObjects(query).map<List<Product>>(_mapProduct);
+      newProducts = realm.subscribeObjects(query);
     }
 
-    setState(() => search = newSearch);
+    setState(() => products = newProducts.map<List<Product>>(_mapProduct));
   }
 
   List<Product> _mapProduct(List all) {
