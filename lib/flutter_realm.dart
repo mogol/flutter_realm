@@ -2,43 +2,49 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_realm/src/method_channel_transport.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
-const MethodChannel _channel =
-    const MethodChannel('plugins.it_nomads.com/flutter_realm');
+final _uuid = Uuid();
 
 class Realm {
-  Realm() {
-    _channel.setMethodCallHandler((call) {
-      switch (call.method) {
-        case 'onResultsChange':
-          final subscriptionId = call.arguments['subscriptionId'];
-          if (subscriptionId == null ||
-              !_subscriptions.containsKey(subscriptionId)) {
-            throw ('Unknown subscriptionId: $call');
-          }
-          // ignore: close_sinks
-          final controller = _subscriptions[subscriptionId];
-          final List results = call.arguments['results'];
-          controller.value = results.cast<Map>();
-          break;
-        default:
-          throw ('Unknown method: $call');
-          break;
-      }
-    });
+  final _channel = MethodChannelTransport(_uuid.v4());
+
+  String get id => _channel.realmId;
+
+  Realm._() {
+    _channel.methodCallStream.listen(_handleMethodCall);
   }
 
-  Future<void> initialize(RealmConfiguration configuration) =>
-      _channel.invokeMethod('initialize', configuration.toMap());
+  static Future<Realm> open(RealmConfiguration configuration) async {
+    final realm = Realm._();
+    await realm._invokeMethod('initialize', configuration.toMap());
+    return realm;
+  }
+
+  void _handleMethodCall(MethodCall call) {
+    switch (call.method) {
+      case 'onResultsChange':
+        final subscriptionId = call.arguments['subscriptionId'];
+        if (subscriptionId == null ||
+            !_subscriptions.containsKey(subscriptionId)) {
+          throw ('Unknown subscriptionId: $call');
+        }
+        // ignore: close_sinks
+        final controller = _subscriptions[subscriptionId];
+        final List results = call.arguments['results'];
+        controller.value = results.cast<Map>();
+        break;
+      default:
+        throw ('Unknown method: $call');
+        break;
+    }
+  }
 
   Future<void> deleteAllObjects() => _channel.invokeMethod('deleteAllObjects');
 
-  static Future<void> deleteAllObjectsFromAllRealms() =>
-      _channel.invokeMethod('deleteAllObjects');
-
-  final _uuid = Uuid();
+  static Future<void> reset() => MethodChannelTransport.reset();
 
   void close() {
     final ids = _subscriptions.keys.toList();
@@ -62,7 +68,7 @@ class Realm {
       return _subscriptions[subscriptionId].stream;
     }
 
-    final controller = BehaviorSubject<List<Map>>(onCancel: (){
+    final controller = BehaviorSubject<List<Map>>(onCancel: () {
       _unsubscribe(subscriptionId);
     });
 
@@ -131,6 +137,14 @@ class Realm {
   }
 
   Future<String> filePath() => _invokeMethod('filePath');
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Realm && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 class RealmQuery {

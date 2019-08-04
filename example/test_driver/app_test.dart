@@ -48,7 +48,7 @@ void main() {
     });
 
     tearDown(() async {
-      await driver.tap(find.byTooltip('Back'));
+      await driver.requestData('reset');
     });
 
     tearDownAll(() async {
