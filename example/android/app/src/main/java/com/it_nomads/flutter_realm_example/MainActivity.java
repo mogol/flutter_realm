@@ -1,4 +1,4 @@
-package com.example.flutter_realm_example;
+package com.it_nomads.flutter_realm_example;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

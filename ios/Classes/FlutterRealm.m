@@ -189,16 +189,6 @@
             [token invalidate];
             [self.tokens removeObjectForKey:subscriptionId];
             result(nil);
-        } else if ([@"initialize" isEqualToString:method]){
-            RLMRealmConfiguration *config = [RLMRealmConfiguration defaultConfiguration];
-            if ([arguments[@"inMemoryIdentifier"] isKindOfClass:[NSString class]]){
-                config.inMemoryIdentifier = arguments[@"inMemoryIdentifier"];
-            }
-            
-            self.realm = [RLMRealm realmWithConfiguration:config error:nil];
-            self.tokens = [NSMutableDictionary dictionary];
-            
-            result(nil);
         } else if ([@"deleteAllObjects" isEqualToString:method]){
             [self deleteAllObjects];
             result(nil);

@@ -1,4 +1,4 @@
-group 'com.example.flutter_realm'
+group 'com.it_nomads.flutter_realm'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.android.tools.build:gradle:3.4.2'
         classpath "io.realm:realm-gradle-plugin:5.13.0"
     }
 }

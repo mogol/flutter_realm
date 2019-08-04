@@ -58,6 +58,7 @@ void main() {
     });
 
     test('fetch', () async {
+      await driver.waitFor(fetchTestFinder);
       await driver.tap(fetchTestFinder);
 
       final products = ['1 iPhone', '2 iPad', '3 iMac', '4 Stand 999\$'];
@@ -68,6 +69,7 @@ void main() {
     });
 
     test('subscribe', () async {
+      await driver.waitFor(subscribeTestFinder);
       await driver.tap(subscribeTestFinder);
 
       final products = ['1 iPad', '2 iPhone', '3 iMac', '4 Stand 999\$'];
@@ -103,6 +105,7 @@ void main() {
     });
 
     test('subscribe with search', () async {
+      await driver.waitFor(subscribeTestFinder);
       await driver.tap(subscribeTestFinder);
       final searchTerm = 'iPhone';
 

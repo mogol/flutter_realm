@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_realm/flutter_realm.dart';
 import 'package:flutter_realm_example/app.dart';
@@ -30,30 +32,43 @@ class TestContainer extends StatefulWidget {
 }
 
 class _TestContainerState extends State<TestContainer> {
-  Realm _realm;
-  Uuid _uuid;
+  Future<Realm> _realm;
 
   @override
   void initState() {
     super.initState();
 
-    _uuid = Uuid();
-    reset(null);
-    widget.resetStream.listen(reset);
-  }
+    final configuration = RealmConfiguration(inMemoryIdentifier: 'inMemory');
+    _realm = Realm.open(configuration);
 
-  Future reset(dynamic _) async {
-    final configuration = RealmConfiguration(inMemoryIdentifier: _uuid.v4());
-    final realm = await Realm.open(configuration);
+    final uuid = Uuid();
 
-    setState(() {
-      _realm = realm;
+    widget.resetStream.listen((_) async {
+      setState(() {
+        final configuration = RealmConfiguration(inMemoryIdentifier: uuid.v4());
+        _realm = Realm.open(configuration);
+      });
     });
   }
 
   @override
-  Widget build(BuildContext context) => MyApp(
-        key: ObjectKey(_realm),
-        realm: _realm,
+  Widget build(BuildContext context) => MaterialApp(
+        home: FutureBuilder(
+          future: _realm,
+          builder: (_, snapshot) {
+            if (snapshot.data == null) {
+              return Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            } else {
+              return MyApp(
+                key: ObjectKey(_realm),
+                realm: snapshot.data,
+              );
+            }
+          },
+        ),
       );
 }

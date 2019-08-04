@@ -1,4 +1,4 @@
-package com.example.flutter_realm;
+package com.it_nomads.flutter_realm;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,9 +8,6 @@ import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.realm.DynamicRealm;
 import io.realm.DynamicRealmObject;
 import io.realm.OrderedCollectionChangeSet;
@@ -22,36 +19,37 @@ import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
-public class FlutterRealmPlugin implements MethodCallHandler {
-
-    private FlutterRealmPlugin(MethodChannel channel) {
-
-
-        this.channel = channel;
-    }
-
-    public static void registerWith(Registrar registrar) {
-        Realm.init(registrar.context());
-
-        final MethodChannel channel = new MethodChannel(registrar.messenger(), "plugins.it_nomads.com/flutter_realm");
-
-        FlutterRealmPlugin plugin = new FlutterRealmPlugin(channel);
-        channel.setMethodCallHandler(plugin);
-    }
-
+class FlutterRealm {
+    private final String realmId;
     private DynamicRealm realm;
     private HashMap<String, RealmResults> subscriptions = new HashMap<>();
     private final MethodChannel channel;
 
-    @Override
-    public void onMethodCall(MethodCall call, Result result) {
+    FlutterRealm(MethodChannel channel, String realmId, Map arguments) {
+        this.channel = channel;
+        this.realmId = realmId;
+
+        RealmConfiguration.Builder builder = new RealmConfiguration.Builder().modules(Realm.getDefaultModule());
+
+        String inMemoryIdentifier = (String) arguments.get("inMemoryIdentifier");
+
+        if (inMemoryIdentifier == null) {
+        } else {
+            builder.inMemory().name(inMemoryIdentifier);
+        }
+        RealmConfiguration config = builder.build();
+
+        Realm.getInstance(config);
+        realm = DynamicRealm.getInstance(config);
+    }
+
+    void onMethodCall(MethodCall call, MethodChannel.Result result) {
 
         try {
             Map arguments = (Map) call.arguments;
-
             switch (call.method) {
                 case "createObject": {
-                    final String className = (String) arguments.get("$");
+                    String className = (String) arguments.get("$");
                     final String uuid = (String) arguments.get("uuid");
 
 
@@ -158,23 +156,6 @@ public class FlutterRealmPlugin implements MethodCallHandler {
                     result.success(null);
                     break;
                 }
-                case "initialize": {
-                    RealmConfiguration config;
-
-                    if (arguments.get("inMemoryIdentifier") == null) {
-                        config = new RealmConfiguration.Builder().build();
-                    } else {
-
-                        config = new RealmConfiguration.Builder().inMemory().build();
-                    }
-
-                    Realm.setDefaultConfiguration(config);
-                    Realm.getDefaultInstance();
-                    this.realm = DynamicRealm.getInstance(config);
-                    subscriptions.clear();
-                    result.success(null);
-                    break;
-                }
                 case "filePath": {
                     result.success(realm.getConfiguration().getPath());
                     break;
@@ -189,7 +170,7 @@ public class FlutterRealmPlugin implements MethodCallHandler {
                 realm.cancelTransaction();
             }
             e.printStackTrace();
-            result.error(e.getMessage(), e.getMessage(), e.getStackTrace());
+            result.error(e.getMessage(), e.getMessage(), e.getStackTrace().toString());
         }
     }
 
@@ -323,8 +304,9 @@ public class FlutterRealmPlugin implements MethodCallHandler {
         subscription.addChangeListener(new OrderedRealmCollectionChangeListener<RealmResults<DynamicRealmObject>>() {
             @Override
             public void onChange(RealmResults<DynamicRealmObject> results, OrderedCollectionChangeSet changeSet) {
-                List list = FlutterRealmPlugin.this.convert(results);
+                List list = convert(results);
                 Map<String, Object> map = new HashMap<>();
+                map.put("realmId", realmId);
                 map.put("subscriptionId", subscriptionId);
                 map.put("results", list);
 
@@ -380,5 +362,13 @@ public class FlutterRealmPlugin implements MethodCallHandler {
             list.add(map);
         }
         return Collections.unmodifiableList(list);
+    }
+
+    void reset() {
+        subscriptions.clear();
+
+        realm.beginTransaction();
+        realm.deleteAll();
+        realm.commitTransaction();
     }
 }
