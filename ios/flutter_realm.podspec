@@ -15,7 +15,7 @@ A new flutter plugin project.
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  s.dependency 'Realm', '~> 3.16.2'
+  s.dependency 'Realm', '~> 3.17.3'
 
   s.ios.deployment_target = '8.0'
 end
