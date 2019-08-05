@@ -6,7 +6,7 @@ Note: This plugin is still under development, and some APIs might not be availab
 
 ## Important
 
-Current implementation required definition of schema in native [Java](https://github.com/mogol/flutter_realm/blob/master/example/android/app/src/main/java/com/example/flutter_realm_example/Product.java) and [ObjC](https://github.com/mogol/flutter_realm/blob/master/example/ios/Runner/RealmSchema.h) host apps.
+Current implementation requires definition of schema in native [Java](https://github.com/mogol/flutter_realm/blob/master/example/android/app/src/main/java/com/example/flutter_realm_example/Product.java) and [ObjC](https://github.com/mogol/flutter_realm/blob/master/example/ios/Runner/RealmSchema.h) host apps.
   
 ## Getting Started
 
