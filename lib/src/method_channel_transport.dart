@@ -1,8 +1,6 @@
-import 'dart:async';
+part of flutter_realm;
 
-import 'package:flutter/services.dart';
-
-final MethodChannel _methodChannel =
+final MethodChannel _realmMethodChannel =
     const MethodChannel('plugins.it_nomads.com/flutter_realm')
       ..setMethodCallHandler(MethodChannelTransport._handleMethodCall);
 
@@ -11,7 +9,7 @@ class MethodChannelTransport {
   final MethodChannel _channel;
 
   MethodChannelTransport(this.realmId, [MethodChannel channel])
-      : _channel = channel ?? _methodChannel;
+      : _channel = channel ?? _realmMethodChannel;
 
   Stream<MethodCall> get methodCallStream =>
       _methodCallController.stream.where(_equalRealmId);
@@ -35,5 +33,5 @@ class MethodChannelTransport {
     return null;
   }
 
-  static Future<void> reset() => _methodChannel.invokeMethod('reset');
+  static Future<void> reset() => _realmMethodChannel.invokeMethod('reset');
 }

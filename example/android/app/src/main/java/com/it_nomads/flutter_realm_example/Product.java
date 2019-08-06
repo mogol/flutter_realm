@@ -6,7 +6,6 @@ import io.realm.annotations.PrimaryKey;
 
 public class Product extends RealmObject  {
     @PrimaryKey
-    @Required
     private String uuid;
     private String title;
 }

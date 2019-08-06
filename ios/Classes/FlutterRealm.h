@@ -9,11 +9,14 @@
 
 #import <Flutter/Flutter.h>
 
+@class RLMRealm;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FlutterRealm : NSObject
 
 - (instancetype)initWithArguments:(NSDictionary *)arguments channel:(FlutterMethodChannel *)channel identifier:(NSString *)identifier;
+- (instancetype)initWithRealm:(RLMRealm *)realm channel:(FlutterMethodChannel *)channel identifier:(NSString *)identifier;
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result;
 

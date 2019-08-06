@@ -1,12 +1,44 @@
+library flutter_realm;
+
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_realm/src/method_channel_transport.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
+part 'src/auth_credentials.dart';
+
+part 'src/method_channel_transport.dart';
+
 final _uuid = Uuid();
+
+class RealmSyncUser {
+  final String identity;
+
+  RealmSyncUser(this.identity);
+
+  static Future<RealmSyncUser> logInWithCredentials({
+    @required RealmSyncCredentials credentials,
+    @required String authServerURL,
+  }) async {
+    final user = await _realmMethodChannel.invokeMethod<Map>(
+      'logInWithCredentials',
+      {
+        'data': credentials._data,
+        'provider': credentials._provider,
+        'authServerURL': authServerURL,
+      },
+    );
+
+    return RealmSyncUser(user['identity']);
+  }
+
+  @override
+  String toString() {
+    return 'RealmSyncUser{identity: $identity}';
+  }
+}
 
 class Realm {
   final _channel = MethodChannelTransport(_uuid.v4());
@@ -20,6 +52,18 @@ class Realm {
   static Future<Realm> open(RealmConfiguration configuration) async {
     final realm = Realm._();
     await realm._invokeMethod('initialize', configuration.toMap());
+    return realm;
+  }
+
+  static Future<Realm> asyncOpenWithConfiguration({
+    @required String syncServerURL,
+    bool fullSynchronization = false,
+  }) async {
+    final realm = Realm._();
+    await realm._invokeMethod('asyncOpenWithConfiguration', {
+      'syncServerURL': syncServerURL,
+      'fullSynchronization': fullSynchronization,
+    });
     return realm;
   }
 

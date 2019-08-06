@@ -1,6 +1,6 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_realm (0.0.3):
+  - flutter_realm (0.0.1):
     - Flutter
     - Realm (~> 3.17.3)
   - Realm (3.17.3):
@@ -23,7 +23,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
-  flutter_realm: 7b3a17c9fbffb7782d48116e67ee5c5d42bd7d2f
+  flutter_realm: a977316966918fb608fe7c3e7f565ffc7b26dcdd
   Realm: 5a1d9d47bfc101dd597668b1a8af4288a2557f6d
 
 PODFILE CHECKSUM: aff02bfeed411c636180d6812254b2daeea14d09

@@ -24,6 +24,10 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 apply plugin: 'realm-android'
 
+realm {
+    syncEnabled = true
+}
+
 android {
     compileSdkVersion 28
 

@@ -44,8 +44,22 @@
 
 @implementation FlutterRealm
 
+- (instancetype)initWithRealm:(RLMRealm *)realm channel:(FlutterMethodChannel *)channel identifier:(NSString *)identifier {
+    self = [super init];
+    
+    if (self != nil) {
+        _realmId = identifier;
+        _channel = channel;
+        _tokens = [NSMutableDictionary dictionary];
+        _realm = realm;
+    }
+    
+    return self;
+}
+
 - (instancetype)initWithArguments:(NSDictionary *)arguments channel:(FlutterMethodChannel *)channel identifier:(NSString *)identifier{
     self = [super init];
+    
     if (self != nil) {
         RLMRealmConfiguration *config = [RLMRealmConfiguration defaultConfiguration];
         
@@ -58,6 +72,7 @@
         _tokens = [NSMutableDictionary dictionary];
         _realm = [RLMRealm realmWithConfiguration:config error:nil];
     }
+    
     return self;
 }
 
