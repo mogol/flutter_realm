@@ -1,7 +1,9 @@
 ## Next version
 
 * *Breaking changes:* replace Realm.initialize with Realm.open.
-* Multiple Realms are supported.
+* Add support for multiple Realms.
+* Add support for the Realm Platform.
+* Add JWT authorization.
 
 ## 0.1.0
 
