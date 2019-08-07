@@ -1,3 +1,5 @@
+[![Codemagic build status](https://api.codemagic.io/apps/5d4acef836524a00149ec94d/5d4acef836524a00149ec94c/status_badge.svg)](https://codemagic.io/apps/5d4acef836524a00149ec94d/5d4acef836524a00149ec94c/latest_build)
+
 # flutter_realm
 
 A Flutter plugin to use [Realm Database](https://realm.io).
