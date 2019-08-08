@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_realm/flutter_realm.dart';
 
 import 'fetch_widget.dart';
+import 'helpers/local_realm_provider.dart';
 import 'subscription_widget.dart';
 
 class MyApp extends StatelessWidget {
-  final Realm realm;
-
-  MyApp({Key key, this.realm}) : super(key: key);
-
   @override
   Widget build(BuildContext context) => MaterialApp(
         home: Home(),
@@ -17,11 +13,21 @@ class MyApp extends StatelessWidget {
           switch (path) {
             case '/fetch':
               return MaterialPageRoute(
-                  builder: (_) => FetchWidget(realm: realm));
+                builder: (_) => RealmProvider(
+                  builder: (realm) => FetchWidget(
+                    realm: realm,
+                  ),
+                ),
+              );
               break;
             case '/subscribe':
               return MaterialPageRoute(
-                  builder: (_) => SubscriptionWidget(realm: realm));
+                builder: (_) => RealmProvider(
+                  builder: (realm) => SubscriptionWidget(
+                    realm: realm,
+                  ),
+                ),
+              );
               break;
             default:
               print('path {$path} not found');
@@ -43,15 +49,21 @@ class Home extends StatelessWidget {
         children: <Widget>[
           ListTile(
             key: Key('Fetch'),
-            title: Text('Fetch'),
+            title: Text('Database Fetch'),
             trailing: Icon(Icons.navigate_next),
             onTap: () => Navigator.of(context).pushNamed('/fetch'),
           ),
           ListTile(
             key: Key('Subscribe'),
-            title: Text('Subscribe'),
+            title: Text('Database Subscribe'),
             trailing: Icon(Icons.navigate_next),
             onTap: () => Navigator.of(context).pushNamed('/subscribe'),
+          ),
+          ListTile(
+            key: Key('Sync'),
+            title: Text('Sync Platform'),
+            trailing: Icon(Icons.navigate_next),
+            onTap: () => null,
           ),
         ],
       ),

@@ -13,13 +13,20 @@ part 'src/method_channel_transport.dart';
 
 final _uuid = Uuid();
 
-class RealmSyncUser {
+class SyncUser {
   final String identity;
+  final bool isAdmin;
+  final String refreshToken;
 
-  RealmSyncUser(this.identity);
+  factory SyncUser._fromMap(Map map) => SyncUser._(
+      identity: map['identity'],
+      isAdmin: map['isAdmin'],
+      refreshToken: map['refreshToken']);
 
-  static Future<RealmSyncUser> logInWithCredentials({
-    @required RealmSyncCredentials credentials,
+  SyncUser._({this.identity, this.isAdmin, this.refreshToken});
+
+  static Future<SyncUser> logInWithCredentials({
+    @required SyncCredentials credentials,
     @required String authServerURL,
   }) async {
     final user = await _realmMethodChannel.invokeMethod<Map>(
@@ -31,12 +38,21 @@ class RealmSyncUser {
       },
     );
 
-    return RealmSyncUser(user['identity']);
+    return SyncUser._fromMap(user);
+  }
+
+  Future<void> logOut() =>
+      _realmMethodChannel.invokeMethod('logOut', {'identity': identity});
+
+  static Future<List<SyncUser>> allUsers() async {
+    final data = await _realmMethodChannel.invokeMethod<List>('allUsers');
+    final users = data.map((m) => SyncUser._fromMap(m)).toList();
+    return users;
   }
 
   @override
   String toString() {
-    return 'RealmSyncUser{identity: $identity}';
+    return 'SyncUser{identity: $identity, isAdmin: $isAdmin, refreshToken: $refreshToken}';
   }
 }
 
@@ -61,6 +77,18 @@ class Realm {
   }) async {
     final realm = Realm._();
     await realm._invokeMethod('asyncOpenWithConfiguration', {
+      'syncServerURL': syncServerURL,
+      'fullSynchronization': fullSynchronization,
+    });
+    return realm;
+  }
+
+  static Future<Realm> syncOpenWithConfiguration({
+    @required String syncServerURL,
+    bool fullSynchronization = false,
+  }) async {
+    final realm = Realm._();
+    await realm._invokeMethod('syncOpenWithConfiguration', {
       'syncServerURL': syncServerURL,
       'fullSynchronization': fullSynchronization,
     });
