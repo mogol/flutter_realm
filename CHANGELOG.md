@@ -1,3 +1,6 @@
+## 0.2.1
+* Fix dependency on meta.
+
 ## 0.2.0
 
 * *Breaking changes:* replace Realm.initialize with Realm.open.

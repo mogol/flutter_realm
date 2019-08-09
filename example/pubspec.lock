@@ -94,7 +94,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.2.0"
+    version: "0.2.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -230,7 +230,7 @@ packages:
       name: node_preamble
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.4.5"
+    version: "1.4.6"
   package_config:
     dependency: transitive
     description:
@@ -300,7 +300,7 @@ packages:
       name: rxdart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.22.1"
+    version: "0.22.1+1"
   shelf:
     dependency: transitive
     description:

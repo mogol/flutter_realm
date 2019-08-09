@@ -1,6 +1,6 @@
 name: flutter_realm
 description: Flutter plugin for Realm Database, a fast, easy to use, and open source alternative to SQLite and Core Data..
-version: 0.2.0
+version: 0.2.1
 author: German Saprykin <saprykin.h@gmail.com>
 homepage: https://github.com/mogol/flutter_realm
 
@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
   uuid: ^2.0.1
   rxdart: ^0.22.0
-  meta: ^1.1.7
+  meta: ^1.1.0
 
 dev_dependencies:
   flutter_test:
