@@ -1,4 +1,4 @@
-## Next version
+## 0.2.0
 
 * *Breaking changes:* replace Realm.initialize with Realm.open.
 * *Breaking changes:* remove Realm prefix in class names.
