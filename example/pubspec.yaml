@@ -1,6 +1,7 @@
 name: flutter_realm_example
 description: Demonstrates how to use the flutter_realm plugin.
 publish_to: 'none'
+version: 1.0.0+1
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
