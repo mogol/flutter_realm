@@ -27,7 +27,7 @@ class SyncUser {
 
   static Future<SyncUser> currentUser() async {
     final user = await _realmMethodChannel.invokeMethod<Map>('currentUser');
-    return SyncUser._fromMap(user);
+    return user == null ? null : SyncUser._fromMap(user);
   }
 
   Future<void> logOut() =>

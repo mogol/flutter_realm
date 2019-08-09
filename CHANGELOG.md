@@ -1,3 +1,6 @@
+## 0.2.2
+* Fix currentUser null mapping.
+
 ## 0.2.1
 * Fix dependency on meta.
 
