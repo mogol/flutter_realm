@@ -58,6 +58,11 @@
     result(data);
 }
 
+- (void)currentUser:(NSDictionary *)arguments result:(FlutterResult)result {
+    RLMSyncUser *user = [RLMSyncUser currentUser];
+    result([self userToMap:user]);
+}
+
 
 - (void)logOut:(NSDictionary *)arguments result:(FlutterResult)result {
     NSString *identity = arguments[@"identity"];
