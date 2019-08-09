@@ -11,7 +11,7 @@ import 'page_objects/home_page_object.dart';
 import 'page_objects/products_page_object.dart';
 
 void main() {
-  group('end-to-end test', () {
+  group('Realm Database', () {
     FlutterDriver driver;
 
     HomePageObject homePage;

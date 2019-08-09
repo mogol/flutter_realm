@@ -9,17 +9,24 @@ class ProductsPageObject {
   SerializableFinder get addFinder => find.byValueKey('add');
 
   SerializableFinder get okFinder => find.byValueKey('ok');
+
   SerializableFinder get deleteButton => find.byValueKey('Delete');
+
   SerializableFinder get editButton => find.byValueKey('Edit');
+
   SerializableFinder get searchButton => find.byValueKey('search');
 
   SerializableFinder get titleFieldFinder => find.byValueKey('titleField');
 
   SerializableFinder rowTitleFinder(int i) => find.byValueKey('row_${i}_title');
+
   SerializableFinder rowMenuFinder(int i) => find.byValueKey('row_${i}_menu');
 
   Future<void> hasProducts(List<String> products) async {
+    await driver.waitFor(rowTitleFinder(products.length - 1));
+
     for (var i = 0; i < products.length; i++) {
+      await driver.waitFor(rowTitleFinder(i));
       await expectLater(await driver.getText(rowTitleFinder(i)), products[i]);
     }
   }

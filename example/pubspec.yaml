@@ -19,6 +19,7 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   test: ^1.6.0
+  graphql: ^2.0.1
 
   flutter_realm:
     path: ../

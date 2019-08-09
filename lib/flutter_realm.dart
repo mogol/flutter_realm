@@ -63,6 +63,7 @@ class SyncUser {
 
 class Realm {
   final _channel = MethodChannelTransport(_uuid.v4());
+  final _unsubscribing = Set<String>();
 
   String get id => _channel.realmId;
 
@@ -104,6 +105,10 @@ class Realm {
     switch (call.method) {
       case 'onResultsChange':
         final subscriptionId = call.arguments['subscriptionId'];
+        if (_unsubscribing.contains(subscriptionId)) {
+          return;
+        }
+
         if (subscriptionId == null ||
             !_subscriptions.containsKey(subscriptionId)) {
           throw ('Unknown subscriptionId: [$subscriptionId]. Call: $call');
@@ -186,9 +191,12 @@ class Realm {
     if (!_subscriptions.containsKey(subscriptionId)) {
       return;
     }
-    await _invokeMethod('unsubscribe', {'subscriptionId': subscriptionId});
     _subscriptions[subscriptionId].close();
     _subscriptions.remove(subscriptionId);
+
+    _unsubscribing.add(subscriptionId);
+    await _invokeMethod('unsubscribe', {'subscriptionId': subscriptionId});
+    _unsubscribing.remove(subscriptionId);
   }
 
   Future<Map> update(String className,

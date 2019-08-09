@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'fetch_widget.dart';
 import 'helpers/local_realm_provider.dart';
 import 'subscription_widget.dart';
+import 'sync/sync.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -27,6 +28,11 @@ class MyApp extends StatelessWidget {
                     realm: realm,
                   ),
                 ),
+              );
+              break;
+            case '/sync':
+              return MaterialPageRoute(
+                builder: (_) => SyncWidget(),
               );
               break;
             default:
@@ -63,7 +69,7 @@ class Home extends StatelessWidget {
             key: Key('Sync'),
             title: Text('Sync Platform'),
             trailing: Icon(Icons.navigate_next),
-            onTap: () => null,
+            onTap: () => Navigator.of(context).pushNamed('/sync'),
           ),
         ],
       ),
