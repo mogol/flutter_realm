@@ -44,7 +44,7 @@ class _FetchWidgetState extends State<FetchWidget> {
       return;
     }
 
-    final query = RealmQuery('Product').contains('title', term);
+    final query = Query('Product').contains('title', term);
     final List all = await widget.realm.objects(query);
     _updateProducts(all);
   }

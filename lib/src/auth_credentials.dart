@@ -7,7 +7,7 @@ class SyncCredentials {
   final Map<String, dynamic> _data;
 }
 
-class JWTAuthProvider {
+abstract class JWTAuthProvider {
   static const String providerId = 'jwt';
 
   static SyncCredentials getCredentials({String jwt}) {
@@ -17,7 +17,7 @@ class JWTAuthProvider {
   }
 }
 
-class UsernamePasswordAuthProvider {
+abstract class UsernamePasswordAuthProvider {
   static const String providerId = 'username&password';
 
   static SyncCredentials getCredentials(

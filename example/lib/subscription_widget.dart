@@ -66,7 +66,7 @@ class _SubscriptionWidgetState extends State<SubscriptionWidget> {
     if (term == null || term.isEmpty) {
       newProducts = realm.subscribeAllObjects('Product');
     } else {
-      final query = RealmQuery('Product').contains('title', term);
+      final query = Query('Product').contains('title', term);
       newProducts = realm.subscribeObjects(query);
     }
 

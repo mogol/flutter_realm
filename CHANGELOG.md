@@ -1,9 +1,11 @@
 ## Next version
 
 * *Breaking changes:* replace Realm.initialize with Realm.open.
-* Add support for multiple Realms.
-* Add support for the Realm Platform.
-* Add JWT authorization.
+* *Breaking changes:* remove Realm prefix in class names.
+* Add support multiple Realms.
+* Add support the Realm Sync.
+* Add Username&Password and JWT authorization.
+* Introduce SyncUser.
 
 ## 0.1.0
 

@@ -17,7 +17,7 @@ class _RealmProviderState extends State<RealmProvider> {
   @override
   void initState() {
     super.initState();
-    final configuration = RealmConfiguration(inMemoryIdentifier: Uuid().v4());
+    final configuration = Configuration(inMemoryIdentifier: Uuid().v4());
     realm = Realm.open(configuration);
   }
 
