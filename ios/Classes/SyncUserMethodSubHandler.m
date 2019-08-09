@@ -32,7 +32,7 @@
     
     RLMSyncCredentials *creds = [self credentialsFromArguments:arguments];
     if (creds == nil){
-        NSString *message = [NSString stringWithFormat:@"Provider is nit supported for authorization. Received: %@", arguments];
+        NSString *message = [NSString stringWithFormat:@"Provider is not supported for authorization. Received: %@", arguments];
         FlutterError *error =[FlutterError errorWithCode:@"-1" message:message details:nil];
         result(error);
         return;
@@ -60,7 +60,8 @@
 
 - (void)currentUser:(NSDictionary *)arguments result:(FlutterResult)result {
     RLMSyncUser *user = [RLMSyncUser currentUser];
-    result([self userToMap:user]);
+    NSDictionary *data = user == nil ? nil : [self userToMap:user];
+    result(data);
 }
 
 
@@ -68,7 +69,7 @@
     NSString *identity = arguments[@"identity"];
     RLMSyncUser *user = [RLMSyncUser allUsers][identity];
     if (user == nil) {
-        NSString *message = [NSString stringWithFormat:@"User with identity \"%@\" is nil.", identity];
+        NSString *message = [NSString stringWithFormat:@"User with identity = \"%@\" not found.", identity];
         FlutterError *error =[FlutterError errorWithCode:@"-1" message:message details:nil];
         result(error);
         return;
@@ -78,6 +79,7 @@
     result(nil);
 }
 
+#pragma mark - Helpers
 - (RLMSyncCredentials *)credentialsFromArguments:(NSDictionary *)arguments {
     NSString *provider = arguments[@"provider"];
     NSDictionary *data = arguments[@"data"];
@@ -104,7 +106,6 @@
     
     map[@"identity"] = [user identity];
     map[@"isAdmin"] = @([user isAdmin]);
-    map[@"refreshToken"] = [user refreshToken];
     
     return map;
 }

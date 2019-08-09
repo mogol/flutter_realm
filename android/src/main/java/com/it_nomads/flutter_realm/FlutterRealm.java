@@ -50,6 +50,14 @@ class FlutterRealm {
         realm = DynamicRealm.getInstance(configuration);
     }
 
+    FlutterRealm(MethodChannel channel, String realmId, Realm realm) {
+        this.channel = channel;
+        this.realmId = realmId;
+        this.realm =
+                DynamicRealm.getInstance(realm.getConfiguration());
+
+    }
+
     void onMethodCall(MethodCall call, MethodChannel.Result result) {
 
         try {

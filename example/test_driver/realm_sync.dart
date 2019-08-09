@@ -8,13 +8,6 @@ import 'package:flutter_realm_example/app.dart';
 
 void main() {
   enableFlutterDriverExtension(handler: (message) async {
-    if (message == 'current_user') {
-      final user = await SyncUser.currentUser();
-      return jsonEncode({
-        'identity': user.identity,
-        'refreshToken': user.refreshToken,
-      });
-    }
     if (message == 'log_out_if_needed') {
       final users = await SyncUser.allUsers();
       for (SyncUser user in users) {

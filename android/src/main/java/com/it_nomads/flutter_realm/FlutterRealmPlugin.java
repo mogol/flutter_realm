@@ -1,6 +1,8 @@
 package com.it_nomads.flutter_realm;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
@@ -8,16 +10,16 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-import io.realm.ObjectServerError;
 import io.realm.Realm;
 import io.realm.SyncConfiguration;
-import io.realm.SyncCredentials;
 import io.realm.SyncUser;
 
 public class FlutterRealmPlugin implements MethodCallHandler {
 
     private FlutterRealmPlugin(MethodChannel channel) {
         this.channel = channel;
+        handlers = new ArrayList<>();
+        handlers.add(new SyncUserMethodSubHandler());
     }
 
     public static void registerWith(Registrar registrar) {
@@ -31,6 +33,7 @@ public class FlutterRealmPlugin implements MethodCallHandler {
 
     private HashMap<String, FlutterRealm> realms = new HashMap<>();
     private final MethodChannel channel;
+    private List<MethodSubHandler> handlers;
 
     @Override
     public void onMethodCall(MethodCall call, Result result) {
@@ -38,31 +41,38 @@ public class FlutterRealmPlugin implements MethodCallHandler {
         try {
             Map arguments = (Map) call.arguments;
 
-            if ("initialize".equals(call.method)) {
-                String realmId = (String) arguments.get("realmId");
-                FlutterRealm flutterRealm = new FlutterRealm(channel, realmId, arguments);
-                realms.put(realmId, flutterRealm);
-                result.success(null);
-            } else if ("reset".equals(call.method)) {
-                for (FlutterRealm realm : realms.values()) {
-                    realm.reset();
-                }
-                realms.clear();
-                result.success(null);
-            } else if ("logInWithCredentials".equals(call.method)) {
-                handleLogInWithCredentials(arguments, result);
-            } else if ("asyncOpenWithConfiguration".equals(call.method)) {
-                handleAsyncOpenWithConfiguration(arguments, result);
-            } else {
-                String realmId = (String) arguments.get("realmId");
-                FlutterRealm flutterRealm = realms.get(realmId);
-                if (flutterRealm == null) {
-                    String message = "Method " + call.method + ":" + arguments.toString();
-                    result.error("Realm not found", message, null);
+            for (MethodSubHandler handler : handlers) {
+                if (handler.onMethodCall(call, result)) {
                     return;
                 }
+            }
 
-                flutterRealm.onMethodCall(call, result);
+            switch (call.method) {
+                case "initialize": {
+                    onInitialize(result, arguments);
+                    break;
+                }
+                case "reset":
+                    onReset(result);
+                    break;
+                case "asyncOpenWithConfiguration":
+                    onAsyncOpenWithConfiguration(arguments, result);
+                    break;
+                case "syncOpenWithConfiguration":
+                    onSyncOpenWithConfiguration(arguments, result);
+                    break;
+                default: {
+                    String realmId = (String) arguments.get("realmId");
+                    FlutterRealm flutterRealm = realms.get(realmId);
+                    if (flutterRealm == null) {
+                        String message = "Method " + call.method + ":" + arguments.toString();
+                        result.error("Realm not found", message, null);
+                        return;
+                    }
+
+                    flutterRealm.onMethodCall(call, result);
+                    break;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,8 +80,52 @@ public class FlutterRealmPlugin implements MethodCallHandler {
         }
     }
 
-    private void handleAsyncOpenWithConfiguration(Map arguments, Result result) {
+    private void onInitialize(Result result, Map arguments) {
         String realmId = (String) arguments.get("realmId");
+        FlutterRealm flutterRealm = new FlutterRealm(channel, realmId, arguments);
+        realms.put(realmId, flutterRealm);
+        result.success(null);
+    }
+
+    private void onReset(Result result) {
+        for (FlutterRealm realm : realms.values()) {
+            realm.reset();
+        }
+        realms.clear();
+        result.success(null);
+    }
+
+    private void onAsyncOpenWithConfiguration(Map arguments, final Result result) {
+        final String realmId = (String) arguments.get("realmId");
+        final SyncConfiguration configuration = getSyncConfiguration(arguments);
+
+        Realm.getInstanceAsync(configuration, new Realm.Callback() {
+            @Override
+            public void onSuccess(Realm realm) {
+                FlutterRealm flutterRealm = new FlutterRealm(channel, realmId, realm);
+                realms.put(realmId, flutterRealm);
+                result.success(null);
+            }
+
+            @Override
+            public void onError(Throwable exception) {
+                result.error(exception.getLocalizedMessage(), exception.getMessage(), exception);
+            }
+
+        });
+
+    }
+
+    private void onSyncOpenWithConfiguration(Map arguments, Result result) {
+        String realmId = (String) arguments.get("realmId");
+        SyncConfiguration configuration = getSyncConfiguration(arguments);
+
+        FlutterRealm flutterRealm = new FlutterRealm(channel, realmId, configuration);
+        realms.put(realmId, flutterRealm);
+        result.success(null);
+    }
+
+    private SyncConfiguration getSyncConfiguration(Map arguments) {
         String syncServerURL = (String) arguments.get("syncServerURL");
         boolean fullSynchronization = (boolean) arguments.get("fullSynchronization");
 
@@ -82,43 +136,9 @@ public class FlutterRealmPlugin implements MethodCallHandler {
             builder.fullSynchronization();
         }
 
-        SyncConfiguration configuration = builder.build();
 
-        FlutterRealm flutterRealm = new FlutterRealm(channel, realmId, configuration);
-        realms.put(realmId, flutterRealm);
-        result.success(null);
+        return builder.build();
     }
 
-    private void handleLogInWithCredentials(Map arguments, final Result result) {
-        String provider = String.valueOf(arguments.get("provider"));
-        if (!provider.equals("jwt")) {
-            result.error("Only jwt provider is supported for authorization. Received: " + provider, null, null);
-            return;
-        }
 
-        Map data = (Map) arguments.get("data");
-        assert data != null;
-
-        String url = (String) arguments.get("authServerURL");
-        assert url != null;
-
-
-        String jwt = (String) data.get("jwt");
-        assert jwt != null;
-
-        SyncCredentials credentials = SyncCredentials.jwt(jwt);
-        SyncUser.logInAsync(credentials, url, new SyncUser.Callback<SyncUser>() {
-            @Override
-            public void onSuccess(SyncUser user) {
-                HashMap<String, String> data = new HashMap<>();
-                data.put("identity", user.getIdentity());
-                result.success(data);
-            }
-
-            @Override
-            public void onError(ObjectServerError error) {
-                result.error(error.getErrorMessage(), null, null);
-            }
-        });
-    }
 }

@@ -16,14 +16,11 @@ final _uuid = Uuid();
 class SyncUser {
   final String identity;
   final bool isAdmin;
-  final String refreshToken;
 
-  factory SyncUser._fromMap(Map map) => SyncUser._(
-      identity: map['identity'],
-      isAdmin: map['isAdmin'],
-      refreshToken: map['refreshToken']);
+  factory SyncUser._fromMap(Map map) =>
+      SyncUser._(identity: map['identity'], isAdmin: map['isAdmin']);
 
-  SyncUser._({this.identity, this.isAdmin, this.refreshToken});
+  SyncUser._({this.identity, this.isAdmin});
 
   static Future<SyncUser> logInWithCredentials({
     @required SyncCredentials credentials,
@@ -57,7 +54,7 @@ class SyncUser {
 
   @override
   String toString() {
-    return 'SyncUser{identity: $identity, isAdmin: $isAdmin, refreshToken: $refreshToken}';
+    return 'SyncUser{identity: $identity, isAdmin: $isAdmin}';
   }
 }
 
