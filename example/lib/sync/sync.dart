@@ -54,7 +54,6 @@ class _SignInState extends State<_SignIn> {
         children: <Widget>[
           TextFormField(
             key: Key('instance_link'),
-            initialValue: 'development-flutter-plugin.de1a.cloud.realm.io',
             decoration: InputDecoration(labelText: 'Instance link'),
             validator: (text) {
               if (text.startsWith('http') || text.startsWith('realm')) {
