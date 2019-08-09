@@ -7,40 +7,20 @@
 import 'package:flutter_driver/flutter_driver.dart';
 import 'package:test/test.dart';
 
+import 'page_objects/home_page_object.dart';
+import 'page_objects/products_page_object.dart';
+
 void main() {
   group('end-to-end test', () {
     FlutterDriver driver;
 
-    final addFinder = find.byValueKey('add');
-    final fetchTestFinder = find.byValueKey('Fetch');
-    final subscribeTestFinder = find.byValueKey('Subscribe');
-
-    final okFinder = find.byValueKey('ok');
-    final deleteButton = find.byValueKey('Delete');
-    final editButton = find.byValueKey('Edit');
-    final searchButton = find.byValueKey('search');
-
-    final titleFieldFinder = find.byValueKey('titleField');
-
-    final rowTitleFinder = (int i) => find.byValueKey('row_${i}_title');
-    final rowMenuFinder = (int i) => find.byValueKey('row_${i}_menu');
-
-    final hasProducts = (List<String> products) async {
-      for (var i = 0; i < products.length; i++) {
-        await expectLater(await driver.getText(rowTitleFinder(i)), products[i]);
-      }
-    };
-    final createProducts = (List<String> products) async {
-      for (var product in products) {
-        await driver.tap(addFinder);
-        await driver.tap(titleFieldFinder);
-        await driver.enterText(product);
-        await driver.tap(okFinder);
-      }
-    };
+    HomePageObject homePage;
+    ProductsPageObject productsPage;
 
     setUpAll(() async {
       driver = await FlutterDriver.connect();
+      productsPage = ProductsPageObject(driver);
+      homePage = HomePageObject(driver);
     });
 
     setUp(() async {
@@ -58,19 +38,19 @@ void main() {
     });
 
     test('fetch', () async {
-      await driver.waitFor(fetchTestFinder);
-      await driver.tap(fetchTestFinder);
+      await driver.waitFor(homePage.fetchTestFinder);
+      await driver.tap(homePage.fetchTestFinder);
 
       final products = ['1 iPhone', '2 iPad', '3 iMac', '4 Stand 999\$'];
 
-      await createProducts(products);
+      await productsPage.createProducts(products);
 
-      await hasProducts(products);
+      await productsPage.hasProducts(products);
     });
 
     test('subscribe', () async {
-      await driver.waitFor(subscribeTestFinder);
-      await driver.tap(subscribeTestFinder);
+      await driver.waitFor(homePage.subscribeTestFinder);
+      await driver.tap(homePage.subscribeTestFinder);
 
       final products = ['1 iPad', '2 iPhone', '3 iMac', '4 Stand 999\$'];
       final updatedProducts = [
@@ -80,33 +60,32 @@ void main() {
         '4 Stand 007\$'
       ];
 
-      await createProducts(products);
-      await hasProducts(products);
+      await productsPage.createProducts(products);
+      await productsPage.hasProducts(products);
 
       for (var i = 0; i < products.length; i++) {
-        await driver.tap(rowMenuFinder(i));
-        await driver.tap(editButton);
-        await driver.tap(titleFieldFinder);
+        await driver.tap(productsPage.rowMenuFinder(i));
+        await driver.tap(productsPage.editButton);
+        await driver.tap(productsPage.titleFieldFinder);
         await driver.enterText(updatedProducts[i]);
-        await driver.tap(okFinder);
+        await driver.tap(productsPage.okFinder);
       }
 
-      await hasProducts(updatedProducts);
+      await productsPage.hasProducts(updatedProducts);
 
       while (updatedProducts.isNotEmpty) {
         final product = updatedProducts.last;
         updatedProducts.removeLast();
 
-        await driver.tap(rowMenuFinder(updatedProducts.length));
-        await driver.tap(deleteButton);
+        await productsPage.deleteRow(updatedProducts.length);
 
         await driver.waitForAbsent(find.text(product));
       }
     });
 
     test('subscribe with search', () async {
-      await driver.waitFor(subscribeTestFinder);
-      await driver.tap(subscribeTestFinder);
+      await driver.waitFor(homePage.subscribeTestFinder);
+      await driver.tap(homePage.subscribeTestFinder);
       final searchTerm = 'iPhone';
 
       final products = [
@@ -116,22 +95,19 @@ void main() {
         '4 Stand 999\$',
         '5 iPhone 8'
       ];
-      await createProducts(products);
+      await productsPage.createProducts(products);
 
-      await driver.tap(searchButton);
-      await driver.tap(titleFieldFinder);
-      await driver.enterText(searchTerm);
-      await driver.tap(okFinder);
+      await productsPage.search(searchTerm);
 
       final expected = ['2 iPhone 7', '5 iPhone 8'];
-      await hasProducts(expected);
+      await productsPage.hasProducts(expected);
 
       final newProducts = ['6 iMax Pro', '7 Mac Mini'];
       final newPhones = ['8 iPhone X', '9 iPhone XS'];
 
-      await createProducts(newProducts + newPhones);
+      await productsPage.createProducts(newProducts + newPhones);
 
-      await hasProducts(expected + newPhones);
+      await productsPage.hasProducts(expected + newPhones);
     });
   });
 }
