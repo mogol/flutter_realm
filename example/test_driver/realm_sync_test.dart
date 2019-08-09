@@ -14,11 +14,7 @@ void main() {
   final uuid = Uuid();
 
   group('Realm Sync', () {
-    String instanceLink = Platform.environment['INSTANCE_LINK'];
-    if (instanceLink == null) {
-      print('Set INSTANCE_LINK before launch the tests');
-      exit(-1);
-    }
+    String instanceLink = getInstanceLink();
 
     FlutterDriver driver;
 
@@ -114,4 +110,20 @@ void main() {
       await productsPage.hasProducts(products);
     });
   });
+}
+
+String getInstanceLink() {
+  final instanceLink = Platform.environment['INSTANCE_LINK'];
+  if (instanceLink == null) {
+    print('Set INSTANCE_LINK before launch the tests');
+    exit(-1);
+  }
+  if (instanceLink.startsWith('https://') ||
+      instanceLink.startsWith('http://') ||
+      instanceLink.startsWith('realms://')) {
+    print(
+        'INSTANCE_LINK should be without scheme. Example: some-address.somewhere-in.cloud.realm.io');
+    exit(-1);
+  }
+  return instanceLink;
 }
