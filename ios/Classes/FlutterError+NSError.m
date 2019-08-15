@@ -12,7 +12,7 @@
 + (FlutterError *) fromNSError:(NSError *)error {
     return [FlutterError errorWithCode:[NSString stringWithFormat:@"%ld", (long)error.code]
                                message:error.localizedDescription
-                               details:error.userInfo];
+                               details:[error.userInfo description]];
 }
 
 @end
