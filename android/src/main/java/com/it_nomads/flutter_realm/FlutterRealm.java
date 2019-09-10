@@ -283,9 +283,9 @@ class FlutterRealm {
                     if (argument instanceof Integer) {
                         result = result.notEqualTo(fieldName, (Integer) argument);
                     } else if (argument instanceof String) {
-                        result = result.equalTo(fieldName, (String) argument);
+                        result = result.notEqualTo(fieldName, (String) argument);
                     } else if (argument instanceof Long) {
-                        result = result.equalTo(fieldName, (Long) argument);
+                        result = result.notEqualTo(fieldName, (Long) argument);
                     } else {
                         throw new Exception("Unsupported type");
                     }
