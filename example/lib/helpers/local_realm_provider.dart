@@ -8,7 +8,7 @@ class RealmProvider extends StatefulWidget {
   const RealmProvider({Key key, this.builder}) : super(key: key);
 
   @override
-  _RealmProviderState createState() => _RealmProviderState();
+  _RealmProviderState createState() => _FileRealmProviderState();
 }
 
 class _RealmProviderState extends State<RealmProvider> {
@@ -17,8 +17,6 @@ class _RealmProviderState extends State<RealmProvider> {
   @override
   void initState() {
     super.initState();
-    final configuration = Configuration(inMemoryIdentifier: Uuid().v4());
-    realm = Realm.open(configuration);
   }
 
   @override
@@ -38,4 +36,30 @@ class _RealmProviderState extends State<RealmProvider> {
       },
     );
   }
+}
+
+class _InMemoryRealmProviderState extends _RealmProviderState {
+
+  @override
+  void initState() {
+    super.initState();
+    final configuration = Configuration(inMemoryIdentifier: Uuid().v4());
+    realm = Realm.open(configuration);
+  }
+
+}
+
+class _FileRealmProviderState extends _RealmProviderState {
+
+  @override
+  void initState() {
+    super.initState();
+    final configuration = Configuration(fileName: 'myrealm.realm');
+    realm = Realm.open(configuration);
+  }
+
+}
+
+class _EncryptedFileRealmProviderState extends _RealmProviderState {
+
 }
