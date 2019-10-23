@@ -66,6 +66,11 @@
         if ([arguments[@"inMemoryIdentifier"] isKindOfClass:[NSString class]]){
             config.inMemoryIdentifier = arguments[@"inMemoryIdentifier"];
         }
+
+        if ([arguments[@"fileName"] isKindOfClass:[NSString class]]){
+            // TODO: Allow filePath and fileName configuration
+            config.fileURL = [NSURL fileURLWithPath:arguments[@"fileName"]];
+        }
         
         _realmId = identifier;
         _channel = channel;
