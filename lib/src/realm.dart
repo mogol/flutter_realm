@@ -218,10 +218,20 @@ class Query {
 
 class Configuration {
   final String inMemoryIdentifier;
+  final String fileDirectory;
+  final String fileName;
 
-  const Configuration({this.inMemoryIdentifier});
+  const Configuration({
+    this.inMemoryIdentifier,
+    this.fileDirectory,
+    this.fileName
+  });
 
-  Map<String, String> toMap() => {'inMemoryIdentifier': inMemoryIdentifier};
+  Map<String, String> toMap() => {
+    'inMemoryIdentifier': inMemoryIdentifier,
+    'fileDirectory': fileDirectory,
+    'fileName': fileName
+  };
 
   static const Configuration defaultConfiguration = const Configuration();
 }
