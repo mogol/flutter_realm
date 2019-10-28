@@ -8,7 +8,12 @@ class RealmProvider extends StatefulWidget {
   const RealmProvider({Key key, this.builder}) : super(key: key);
 
   @override
-  _RealmProviderState createState() => _FileRealmProviderState();
+  //_RealmProviderState createState() => _InMemoryRealmProviderState();
+  //_RealmProviderState createState() => _FileRealmProviderState();
+  //_RealmProviderState createState() => _FileNameRealmProviderState();
+  //_RealmProviderState createState() => _FileDirectoryRealmProviderState();
+  _RealmProviderState createState() => _FileDirectoryNameRealmProviderState();
+  //_RealmProviderState createState() => _EncryptedFileRealmProviderState();
 }
 
 class _RealmProviderState extends State<RealmProvider> {
@@ -54,7 +59,47 @@ class _FileRealmProviderState extends _RealmProviderState {
   @override
   void initState() {
     super.initState();
-    final configuration = Configuration(fileName: 'myrealm.realm');
+    final configuration = Configuration();
+    realm = Realm.open(configuration);
+  }
+
+}
+
+class _FileNameRealmProviderState extends _RealmProviderState {
+
+  @override
+  void initState() {
+    super.initState();
+    final configuration = Configuration(
+      fileName: 'custom_name.realm'
+    );
+    realm = Realm.open(configuration);
+  }
+
+}
+
+class _FileDirectoryRealmProviderState extends _RealmProviderState {
+
+  @override
+  void initState() {
+    super.initState();
+    final configuration = Configuration(
+      fileDirectory:  'custom_dir/'
+    );
+    realm = Realm.open(configuration);
+  }
+
+}
+
+class _FileDirectoryNameRealmProviderState extends _RealmProviderState {
+
+  @override
+  void initState() {
+    super.initState();
+    final configuration = Configuration(
+        fileDirectory: 'custom_dir/sub_dir/',
+        fileName: 'custom_name.realm'
+    );
     realm = Realm.open(configuration);
   }
 

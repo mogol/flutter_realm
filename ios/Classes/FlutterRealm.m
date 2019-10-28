@@ -63,13 +63,23 @@
     if (self != nil) {
         RLMRealmConfiguration *config = [RLMRealmConfiguration defaultConfiguration];
         
-        if ([arguments[@"inMemoryIdentifier"] isKindOfClass:[NSString class]]){
+        if ([arguments[@"inMemoryIdentifier"] isKindOfClass:[NSString class]]) {
             config.inMemoryIdentifier = arguments[@"inMemoryIdentifier"];
-        }
-
-        if ([arguments[@"fileName"] isKindOfClass:[NSString class]]){
-            // TODO: Allow filePath and fileName configuration
-            config.fileURL = [NSURL fileURLWithPath:arguments[@"fileName"]];
+        } else if ([arguments[@"fileDirectory"] isKindOfClass:[NSString class]] || [arguments[@"fileName"] isKindOfClass:[NSString class]]) {
+            NSURL* fileURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
+            if ([arguments[@"fileDirectory"] isKindOfClass:[NSString class]]) {
+                fileURL = [fileURL URLByAppendingPathComponent:arguments[@"fileDirectory"] isDirectory:YES];
+                [[NSFileManager defaultManager] createDirectoryAtPath:fileURL.path
+                                          withIntermediateDirectories:YES
+                                                           attributes:nil
+                                                                error:NULL];
+            }
+            if ([arguments[@"fileName"] isKindOfClass:[NSString class]]) {
+                fileURL = [fileURL URLByAppendingPathComponent:arguments[@"fileName"] isDirectory:NO];
+            } else {
+                fileURL = [fileURL URLByAppendingPathComponent:@"default.realm" isDirectory:NO];
+            }
+            config.fileURL = fileURL;
         }
         
         _realmId = identifier;
