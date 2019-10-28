@@ -81,7 +81,12 @@
             }
             config.fileURL = fileURL;
         }
-        
+
+        if ([arguments[@"encryptionKey"] isKindOfClass:[FlutterStandardTypedData class]]) {
+            FlutterStandardTypedData* uint8list = arguments[@"encryptionKey"];
+            config.encryptionKey = uint8list.data;
+        }
+
         _realmId = identifier;
         _channel = channel;
         _tokens = [NSMutableDictionary dictionary];
