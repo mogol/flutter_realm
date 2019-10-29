@@ -1,5 +1,6 @@
 package com.it_nomads.flutter_realm;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,11 +32,25 @@ class FlutterRealm {
 
         RealmConfiguration.Builder builder = new RealmConfiguration.Builder().modules(Realm.getDefaultModule());
 
+        byte[] encryptionKey = (byte[]) arguments.get("encryptionKey");
+        String fileDirectory = (String) arguments.get("fileDirectory");
+        String fileName = (String) arguments.get("fileName");
         String inMemoryIdentifier = (String) arguments.get("inMemoryIdentifier");
 
-        if (inMemoryIdentifier == null) {
-        } else {
+        if (inMemoryIdentifier != null) {
             builder.inMemory().name(inMemoryIdentifier);
+        } else if (fileDirectory != null || fileName != null) {
+            if (fileDirectory != null) {
+                RealmConfiguration tmp = builder.build();
+                File file = new File(tmp.getRealmDirectory(), fileDirectory);
+                builder.directory(file);
+            }
+            if (fileName != null) {
+                builder.name(fileName);
+            }
+        }
+        if (encryptionKey != null) {
+            builder.encryptionKey(encryptionKey);
         }
         RealmConfiguration config = builder.build();
 
