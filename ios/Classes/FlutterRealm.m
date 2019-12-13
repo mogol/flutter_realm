@@ -65,26 +65,14 @@
         
         if ([arguments[@"inMemoryIdentifier"] isKindOfClass:[NSString class]]) {
             config.inMemoryIdentifier = arguments[@"inMemoryIdentifier"];
-        } else if ([arguments[@"fileDirectory"] isKindOfClass:[NSString class]] || [arguments[@"fileName"] isKindOfClass:[NSString class]]) {
-            NSURL* fileURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
-            if ([arguments[@"fileDirectory"] isKindOfClass:[NSString class]]) {
-                fileURL = [fileURL URLByAppendingPathComponent:arguments[@"fileDirectory"] isDirectory:YES];
-                [[NSFileManager defaultManager] createDirectoryAtPath:fileURL.path
-                                          withIntermediateDirectories:YES
-                                                           attributes:nil
-                                                                error:NULL];
+        } else {
+            if ([arguments[@"filePath"] isKindOfClass:[NSString class]]) {
+                config.fileURL = [NSURL fileURLWithPath:arguments[@"filePath"] isDirectory:NO];
             }
-            if ([arguments[@"fileName"] isKindOfClass:[NSString class]]) {
-                fileURL = [fileURL URLByAppendingPathComponent:arguments[@"fileName"] isDirectory:NO];
-            } else {
-                fileURL = [fileURL URLByAppendingPathComponent:@"default.realm" isDirectory:NO];
+            if ([arguments[@"encryptionKey"] isKindOfClass:[FlutterStandardTypedData class]]) {
+                FlutterStandardTypedData* uint8list = arguments[@"encryptionKey"];
+                config.encryptionKey = uint8list.data;
             }
-            config.fileURL = fileURL;
-        }
-
-        if ([arguments[@"encryptionKey"] isKindOfClass:[FlutterStandardTypedData class]]) {
-            FlutterStandardTypedData* uint8list = arguments[@"encryptionKey"];
-            config.encryptionKey = uint8list.data;
         }
 
         _realmId = identifier;

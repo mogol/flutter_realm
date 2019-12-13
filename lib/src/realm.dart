@@ -218,21 +218,18 @@ class Query {
 
 class Configuration {
   final Uint8List encryptionKey;
-  final String fileDirectory;
-  final String fileName;
+  final String filePath;
   final String inMemoryIdentifier;
 
   const Configuration({
     this.encryptionKey,
-    this.fileDirectory,
-    this.fileName,
+    this.filePath,
     this.inMemoryIdentifier
   });
 
   Map<String, dynamic> toMap() => {
     'encryptionKey': encryptionKey,
-    'fileDirectory': fileDirectory,
-    'fileName': fileName,
+    'filePath': filePath,
     'inMemoryIdentifier': inMemoryIdentifier
   };
 

@@ -33,24 +33,21 @@ class FlutterRealm {
         RealmConfiguration.Builder builder = new RealmConfiguration.Builder().modules(Realm.getDefaultModule());
 
         byte[] encryptionKey = (byte[]) arguments.get("encryptionKey");
-        String fileDirectory = (String) arguments.get("fileDirectory");
-        String fileName = (String) arguments.get("fileName");
+        String filePath = (String) arguments.get("filePath");
         String inMemoryIdentifier = (String) arguments.get("inMemoryIdentifier");
 
         if (inMemoryIdentifier != null) {
             builder.inMemory().name(inMemoryIdentifier);
-        } else if (fileDirectory != null || fileName != null) {
-            if (fileDirectory != null) {
-                RealmConfiguration tmp = builder.build();
-                File file = new File(tmp.getRealmDirectory(), fileDirectory);
-                builder.directory(file);
+        } else {
+            if (filePath != null) {
+                File file = new File(filePath);
+                File directory = new File(file.getParent());
+                builder.directory(directory);
+                builder.name(file.getName());
             }
-            if (fileName != null) {
-                builder.name(fileName);
+            if (encryptionKey != null) {
+                builder.encryptionKey(encryptionKey);
             }
-        }
-        if (encryptionKey != null) {
-            builder.encryptionKey(encryptionKey);
         }
         RealmConfiguration config = builder.build();
 
