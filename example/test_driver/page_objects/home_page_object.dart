@@ -5,6 +5,7 @@ class HomePageObject {
   HomePageObject(this.driver);
 
   SerializableFinder get fetchTestFinder => find.byValueKey('Fetch');
+  SerializableFinder get fetchEncryptedTestFinder => find.byValueKey('FetchEncrypted');
   SerializableFinder get subscribeTestFinder => find.byValueKey('Subscribe');
   SerializableFinder get syncTestFinder => find.byValueKey('Sync');
 
