@@ -48,6 +48,17 @@ void main() {
       await productsPage.hasProducts(products);
     });
 
+    test('fetch encrypted', () async {
+      await driver.waitFor(homePage.fetchEncryptedTestFinder);
+      await driver.tap(homePage.fetchEncryptedTestFinder);
+
+      final products = ['1 iPhone', '2 iPad', '3 iMac', '4 Stand 999\$'];
+
+      await productsPage.createProducts(products);
+
+      await productsPage.hasProducts(products);
+    });
+
     test('subscribe', () async {
       await driver.waitFor(homePage.subscribeTestFinder);
       await driver.tap(homePage.subscribeTestFinder);

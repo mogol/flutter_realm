@@ -217,11 +217,21 @@ class Query {
 }
 
 class Configuration {
+  final Uint8List encryptionKey;
+  final String filePath;
   final String inMemoryIdentifier;
 
-  const Configuration({this.inMemoryIdentifier});
+  const Configuration({
+    this.encryptionKey,
+    this.filePath,
+    this.inMemoryIdentifier
+  });
 
-  Map<String, String> toMap() => {'inMemoryIdentifier': inMemoryIdentifier};
+  Map<String, dynamic> toMap() => {
+    'encryptionKey': encryptionKey,
+    'filePath': filePath,
+    'inMemoryIdentifier': inMemoryIdentifier
+  };
 
   static const Configuration defaultConfiguration = const Configuration();
 }

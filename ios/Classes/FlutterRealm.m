@@ -63,10 +63,18 @@
     if (self != nil) {
         RLMRealmConfiguration *config = [RLMRealmConfiguration defaultConfiguration];
         
-        if ([arguments[@"inMemoryIdentifier"] isKindOfClass:[NSString class]]){
+        if ([arguments[@"inMemoryIdentifier"] isKindOfClass:[NSString class]]) {
             config.inMemoryIdentifier = arguments[@"inMemoryIdentifier"];
+        } else {
+            if ([arguments[@"filePath"] isKindOfClass:[NSString class]]) {
+                config.fileURL = [NSURL fileURLWithPath:arguments[@"filePath"] isDirectory:NO];
+            }
+            if ([arguments[@"encryptionKey"] isKindOfClass:[FlutterStandardTypedData class]]) {
+                FlutterStandardTypedData* uint8list = arguments[@"encryptionKey"];
+                config.encryptionKey = uint8list.data;
+            }
         }
-        
+
         _realmId = identifier;
         _channel = channel;
         _tokens = [NSMutableDictionary dictionary];
