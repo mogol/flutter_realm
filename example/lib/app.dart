@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_realm_example/helpers/encrypted_realm_storage.dart';
 
 import 'fetch_widget.dart';
 import 'helpers/local_realm_provider.dart';
+import 'helpers/encrypted_realm_provider.dart';
 import 'subscription_widget.dart';
 import 'sync/sync.dart';
 
@@ -18,6 +20,19 @@ class MyApp extends StatelessWidget {
                   builder: (realm) => FetchWidget(
                     realm: realm,
                   ),
+                ),
+              );
+              break;
+            case '/fetchencrypted':
+              return MaterialPageRoute(
+                builder: (_) => EncryptedRealmProvider(
+                  builder: (realm) => FetchWidget(
+                    realm: realm,
+                  ),
+                  storage: EncryptedRealmStorage(
+                    aes256Hex: '5870cce530afbb10cf55604bf28693921e540bd1dc75c3df8f6a9dd55c1633707b50727d9c0b0f2326469cfba08feb28fd444b5b290a39a8544ee2332eea1d4b',
+                    relativePath: '/foo/encrypted.realm'
+                  )
                 ),
               );
               break;
@@ -55,9 +70,15 @@ class Home extends StatelessWidget {
         children: <Widget>[
           ListTile(
             key: Key('Fetch'),
-            title: Text('Database Fetch'),
+            title: Text('Database Fetch - In Memory'),
             trailing: Icon(Icons.navigate_next),
             onTap: () => Navigator.of(context).pushNamed('/fetch'),
+          ),
+          ListTile(
+            key: Key('FetchEncrypted'),
+            title: Text('Database Fetch - Encrypted File'),
+            trailing: Icon(Icons.navigate_next),
+            onTap: () => Navigator.of(context).pushNamed('/fetchencrypted'),
           ),
           ListTile(
             key: Key('Subscribe'),
