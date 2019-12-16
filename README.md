@@ -21,7 +21,7 @@ See the `example` directory for a complete sample app using Realm Database.
 
 ## Features 
 
-- [x] Persistent and In-memory Realm
+- [x] Persistent, In-memory, and Encrypted Realm
 - [x] deleteAllObjects
 - [x] Get allObjects by classname
 - [x] Create object 
